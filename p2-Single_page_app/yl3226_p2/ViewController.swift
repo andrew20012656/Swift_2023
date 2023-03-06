@@ -16,6 +16,8 @@ class ViewController: UIViewController {
     var inputStackView = UIStackView()
     var ingredientTextField = UITextField()
     var quantityTextField = UITextField()
+    let unitSegmentedControl = UISegmentedControl(items: ["g", "ml", "oz"])
+    var quantityStackView = UIStackView()
     
     var recipeTextView = UITextView()
     
@@ -73,6 +75,13 @@ class ViewController: UIViewController {
         quantityTextField.borderStyle = .roundedRect
         quantityTextField.font = UIFont(name: "Georgia", size: 15)
         quantityTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        unitSegmentedControl.frame = CGRect(x: 10, y: 50, width: 100, height: 50)
+        unitSegmentedControl.selectedSegmentIndex = 0
+        unitSegmentedControl.tintColor = .systemGray5
+        unitSegmentedControl.addTarget(self, action: #selector(segmentedValueChanged(_:)), for: .valueChanged)
+        view.addSubview(unitSegmentedControl)
+        
 
         inputStackView = UIStackView(arrangedSubviews: [ingredientTextField, quantityTextField])
         inputStackView.backgroundColor = .systemGray5
@@ -146,6 +155,8 @@ class ViewController: UIViewController {
             addSwitch.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             addSwitch.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
+        
+
     }
     
     @objc func buttonAction() {
@@ -193,5 +204,8 @@ class ViewController: UIViewController {
         }
     }
     
+    @objc func segmentedValueChanged(_ sender:UISegmentedControl!){
+        print("\(sender.selectedSegmentIndex)")
+    }
 }
 
