@@ -80,10 +80,14 @@ class ViewController: UIViewController {
         unitSegmentedControl.selectedSegmentIndex = 0
         unitSegmentedControl.tintColor = .systemGray5
         unitSegmentedControl.addTarget(self, action: #selector(segmentedValueChanged(_:)), for: .valueChanged)
-        view.addSubview(unitSegmentedControl)
         
-
-        inputStackView = UIStackView(arrangedSubviews: [ingredientTextField, quantityTextField])
+        quantityStackView = UIStackView(arrangedSubviews: [quantityTextField])
+        quantityStackView.axis = .horizontal
+        quantityStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 7, leading: 8, bottom: 7, trailing: 10)
+        quantityStackView.translatesAutoresizingMaskIntoConstraints = false
+        quantityStackView.addArrangedSubview(unitSegmentedControl)
+        
+        inputStackView = UIStackView(arrangedSubviews: [ingredientTextField, quantityStackView])
         inputStackView.backgroundColor = .systemGray5
         inputStackView.axis = .vertical
         inputStackView.isLayoutMarginsRelativeArrangement = true
@@ -156,13 +160,35 @@ class ViewController: UIViewController {
             addSwitch.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
         
-
+        NSLayoutConstraint.activate([
+            quantityTextField.leadingAnchor.constraint(equalTo: ingredientTextField.leadingAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            unitSegmentedControl.trailingAnchor.constraint(equalTo: ingredientTextField.trailingAnchor)
+        ])
     }
     
     @objc func buttonAction() {
-        var validInputs = true
-        inputWarningTextView.isHidden = !validInputs
-        if(addButton.isSelected) {
+        
+        let inEditMode = addSwitch.isOn
+        
+        if(inEditMode) {
+            inputWarningTextView.isHidden = false; //Allows warning message to be shown
+            
+            // Record the unit selected by the user
+            var unitSelected : String
+            switch unitSegmentedControl.selectedSegmentIndex {
+            case 1:
+                unitSelected = "ml"
+            case 2:
+                unitSelected = "oz"
+            default:
+                unitSelected = "g"
+            }
+            
+            // Input validation
+            var validInputs = true
             if let ingredient = ingredientTextField.text, let quantity = quantityTextField.text {
                 if(ingredient.isEmpty && quantity.isEmpty) {
                     validInputs = false
@@ -173,9 +199,15 @@ class ViewController: UIViewController {
                 } else if(quantity.isEmpty) {
                     validInputs = false
                     inputWarningTextView.text = "Please enter the correct quantity"
+                } else if let num = Int(quantity), num < 0 {
+                    validInputs = false
+                    inputWarningTextView.text = "Please enter a quantity greater than zero"
+                } else if(Int(quantity) == nil) {
+                    validInputs = false
+                    inputWarningTextView.text = "Please enter a number"
                 } else {
                     ingredientList.append(ingredient)
-                    quantityList.append(quantity)
+                    quantityList.append(quantity + " " + unitSelected)
                     validInputs = true
                 }
             }
@@ -187,25 +219,18 @@ class ViewController: UIViewController {
                     itemListText += ingredient
                     itemListText += "\n"
                 }
-                
                 recipeTextView.text = itemListText
                 inputWarningTextView.text = ""
             }
-        }
-        
-        addButton.isSelected.toggle();
-    }
-    
-    @objc func switchAction(sender:UISwitch) {
-        addButton.isEnabled = sender.isOn
-        
-        if(addButton.isEnabled == false) {
+        } else { // not in edit mode
             inputWarningTextView.isHidden = true
         }
     }
     
+    @objc func switchAction(sender:UISwitch) {
+    }
+    
     @objc func segmentedValueChanged(_ sender:UISegmentedControl!){
-        print("\(sender.selectedSegmentIndex)")
     }
 }
 
