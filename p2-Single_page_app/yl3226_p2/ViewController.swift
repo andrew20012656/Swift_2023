@@ -77,6 +77,7 @@ class ViewController: UIViewController {
         quantityTextField.translatesAutoresizingMaskIntoConstraints = false
         
         unitSegmentedControl.frame = CGRect(x: 10, y: 50, width: 100, height: 50)
+        unitSegmentedControl.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Georgia", size: 15)!], for: .normal)
         unitSegmentedControl.selectedSegmentIndex = 0
         unitSegmentedControl.tintColor = .systemGray5
         unitSegmentedControl.addTarget(self, action: #selector(segmentedValueChanged(_:)), for: .valueChanged)
@@ -104,8 +105,12 @@ class ViewController: UIViewController {
         
         addButton.setTitle("Add", for: .normal)
         addButton.setTitleColor(.black, for: .normal)
+        addButton.backgroundColor = .systemGray4
+        addButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         addButton.titleLabel?.font = UIFont(name: "Georgia-bold", size: 15)
         addButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        addButton.layer.cornerRadius = 10
+        addButton.layer.masksToBounds = true
         addButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addButton)
 
